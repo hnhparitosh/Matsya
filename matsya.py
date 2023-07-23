@@ -1,4 +1,5 @@
 import chess
+import random
 
 class Matsya:
 
@@ -14,7 +15,9 @@ class Matsya:
         self.board.push(move)
 
     def get_best_move(self):
-        best_move = chess.engine.AlphaBetaPruning(self.board, depth=self.search_depth, time_limit=self.time_control).best_move()
+        moves = list(self.board.legal_moves)
+        # print(moves)
+        best_move = random.choice(moves)
         return best_move
 
     def get_evaluation_of_position(self):
@@ -28,19 +31,19 @@ class Matsya:
     
     def uci_loop(self):
         while True:
-            command = input()
-            if command == "uci":
+            command = input().split()
+            if command[0] == "uci":
                 self.uci_protocol()
-            elif command.startswith("isready"):
+            elif command[0] == "isready":
                 print("readyok")
-            elif command.startswith("position"):
+            elif command[0] == "ucinewgame":
+                self.board = chess.Board()
+            elif command[0] == "position":
                 self.handle_position_command(command)
-            elif command.startswith("go"):
+            elif command[0] == "go":
                 self.handle_go_command(command)
-            elif command == "quit":
-                break
-            else:
-                print("Unknown command: " + command)
+            elif command[0] == "quit":
+                exit()
     
     def uci_protocol(self):
         print("id name Matsya Engine")
@@ -48,31 +51,20 @@ class Matsya:
         print("uciok")
     
     def handle_position_command(self, command):
-        parts = command.split(" ")
-        if len(parts) != 5:
-            print("Invalid position command: " + command)
-            return
+        if command[1] == "startpos":
+            self.board.set_fen(chess.STARTING_FEN)
+            command = command[1:]
+            
+            moves = command[2:]
+            for move in moves:
+                self.board.push_uci(move)
 
-        fen = parts[1]
-        start_pos = parts[2]
-        end_pos = parts[3]
-        moves = parts[4]
-
-        self.board.set_fen(fen)
-        self.board.set_position(start_pos)
-        self.board.push_san(moves)
     
     def handle_go_command(self, command):
-        parts = command.split(" ")
-        if len(parts) not in (2, 3):
-            print("Invalid go command: " + command)
-            return
-
-        depth = int(parts[1]) if len(parts) == 3 else self.search_depth
-        time_control = int(parts[2]) if len(parts) == 3 else self.time_control
-
-        best_move = chess.engine.AlphaBetaPruning(self.board, depth=depth, time_limit=time_control).best_move()
-        print(best_move)
+        best_move = self.get_best_move()
+        self.board.push(best_move)
+        print("bestmove " + str(best_move))
+        
 
 if __name__ == "__main__":
     engine = Matsya(chess.Board())
