@@ -1,17 +1,12 @@
 import chess
 import random
-import math
-import neural_net
-import torch
 
 class Matsya:
 
     def __init__(self, board):
         self.board = board
-        self.depth = 3
+        self.search_depth = 3
         self.time_control = 1000
-        self.eval_model = neural_net.EvalNetwork()
-        self.eval_model.load()
     
     def get_current_position(self):
         return self.board.fen()
@@ -20,44 +15,20 @@ class Matsya:
         self.board.push(move)
 
     def get_best_move(self):
-        # legal_moves = self.board.legal_moves
-        # best_move = None
-        # best_score = -math.inf
-
-        best_move = self.search()
+        moves = list(self.board.legal_moves)
+        # print(moves)
+        best_move = random.choice(moves)
         return best_move
 
-    def search(self, depth):
-        best_move = None
-        best_score = -math.inf
-        alpa = -math.inf
-        beta = math.inf
-        for move in self.board.legal_moves():
-            pass
+    def get_evaluation_of_position(self):
+        return chess.engine.AlphaBetaPruning(self.board, depth=self.search_depth, time_limit=self.time_control).evaluation()
 
+    def set_search_depth(self, depth):
+        self.search_depth = depth
+
+    def set_time_control(self, time_control):
+        self.time_control = time_control
     
-    def alpha_beta(self, board, depth, alpha, beta, maximizing_player):
-        if depth == 0 or board.is_game_over():
-            return self.evaluate(board.fen())
-        
-        
-
-    def evaluate(self, board):
-        # first check for mate or draw
-        if board.is_checkmate():
-            if board.turn:
-                return -math.inf
-            else:
-                return math.inf
-        
-        if board.is_stalemate() or board.is_insufficient_material():
-            return 0
-        
-        value = self.eval_model.inference(board.fen())
-        return value
-
-
-
     def uci_loop(self):
         while True:
             command = input().split()
