@@ -1,6 +1,7 @@
 # Matsya Chess Engine 🐟
 
 This is a simple ♟️chess engine written in Python.
+Run the `matsya.exe` from the `output` folder to play against the engine or load it in any GUI.
 
 ## Inspiration
 
