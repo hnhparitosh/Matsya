@@ -3,3 +3,4 @@ output/
 data/
 temp.py
 process_data.py
+__pycache__/

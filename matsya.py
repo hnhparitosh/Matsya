@@ -1,17 +1,13 @@
 import chess
 import random
 import math
-import neural_net
-import torch
+import evaluate
 
 class Matsya:
 
     def __init__(self, board):
         self.board = board
         self.depth = 3
-        self.time_control = 1000
-        self.eval_model = neural_net.EvalNetwork()
-        self.eval_model.load()
     
     def get_current_position(self):
         return self.board.fen()
@@ -20,27 +16,71 @@ class Matsya:
         self.board.push(move)
 
     def get_best_move(self):
-        # legal_moves = self.board.legal_moves
-        # best_move = None
-        # best_score = -math.inf
+        best_move = chess.Move.null()
+        depth = 2
 
-        best_move = self.search()
+        if self.board.turn:
+            best_move, _ = self.search(depth, self.board, True)
+        else:
+            best_move, _ = self.search(depth, self.board, False)
+
         return best_move
 
-    def search(self, depth):
-        best_move = None
-        best_score = -math.inf
-        alpa = -math.inf
-        beta = math.inf
-        for move in self.board.legal_moves():
-            pass
+    def search(self, depth, board, maximize):
 
-    
-    def alpha_beta(self, board, depth, alpha, beta, maximizing_player):
-        if depth == 0 or board.is_game_over():
-            return self.evaluate(board.fen())
-        
-        
+        legals = board.legal_moves
+        bestMove = None
+        bestValue = -9999
+        if(not maximize):
+            bestValue = 9999
+        for move in legals:
+            board.push(move)
+            value = self.alphaBeta(board, depth-1, -10000, 10000, (not maximize))
+            board.pop()
+            if maximize:
+                if value > bestValue:
+                    bestValue = value
+                    bestMove = move
+            else:
+                if value < bestValue:
+                    bestValue = value
+                    bestMove = move
+        return (bestMove, bestValue)
+
+    def alphaBeta(self, board, depth, alpha, beta, maximize):
+        if(board.is_checkmate()):
+            if(board.turn == chess.WHITE):
+                return -10000
+            else:
+                return 10000
+        if depth == 0:
+            val = self.evaluate(board)
+            if val is not None:
+                return val
+            else:
+                return 0
+        legals = board.legal_moves
+        if(maximize):
+            bestVal = -9999
+            for move in legals:
+                board.push(move)
+                bestVal = max(bestVal, self.alphaBeta(board, depth-1, alpha, beta, (not maximize)))
+                board.pop()
+                alpha = max(alpha, bestVal)
+                if alpha >= beta:
+                    return bestVal
+            return bestVal
+        else:
+            bestVal = 9999
+            for move in legals:
+                board.push(move)
+                bestVal = min(bestVal, self.alphaBeta(board, depth - 1, alpha, beta, (not maximize)))
+                board.pop()
+                beta = min(beta, bestVal)
+                if beta <= alpha:
+                    return bestVal
+            return bestVal
+
 
     def evaluate(self, board):
         # first check for mate or draw
@@ -53,9 +93,8 @@ class Matsya:
         if board.is_stalemate() or board.is_insufficient_material():
             return 0
         
-        value = self.eval_model.inference(board.fen())
+        value = evaluate.evaluate_board(board)
         return value
-
 
 
     def uci_loop(self):
@@ -70,12 +109,12 @@ class Matsya:
             elif command[0] == "position":
                 self.handle_position_command(command)
             elif command[0] == "go":
-                self.handle_go_command(command)
+                self.handle_go_command()
             elif command[0] == "quit":
                 exit()
     
     def uci_protocol(self):
-        print("id name Matsya_v0_Random")
+        print("id name Matsya Engine")
         print("id author Paritosh Dahiya")
         print("uciok")
     
@@ -89,8 +128,10 @@ class Matsya:
                 self.board.push_uci(move)
 
     
-    def handle_go_command(self, command):
+    def handle_go_command(self):
         best_move = self.get_best_move()
+        if best_move is None or best_move == chess.Move.null():
+            best_move = random.choice(list(self.board.legal_moves))
         self.board.push(best_move)
         print("bestmove " + str(best_move))
         
