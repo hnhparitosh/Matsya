@@ -43,6 +43,15 @@ I really like chess and I always wanted to make a chess engine myself. We all ha
 
 - Refactor the code.
 
+## Screenshots
+
+- Matsya Engine Playing against itself in Arena GUI
+
+![Matsya in Arena GUI](resources/matsya_arena.png)
+
+- CLI of Matsya Engine
+
+![Matsya CLI](resources/matsya_cli.png)
 ## Built with
 
 - Love 💖
