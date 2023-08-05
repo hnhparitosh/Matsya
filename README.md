@@ -52,6 +52,7 @@ I really like chess and I always wanted to make a chess engine myself. We all ha
 - CLI of Matsya Engine
 
 ![Matsya CLI](resources/matsya_cli.png)
+
 ## Built with
 
 - Love 💖
