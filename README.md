@@ -48,6 +48,7 @@ I really like chess and I always wanted to make a chess engine myself. We all ha
 - Matsya Engine Playing against itself in Arena GUI
 
 ![Matsya in Arena GUI](resources/matsya_arena.png)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhnhparitosh%2FMatsya.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhnhparitosh%2FMatsya?ref=badge_shield)
 
 - CLI of Matsya Engine
 
@@ -61,3 +62,7 @@ I really like chess and I always wanted to make a chess engine myself. We all ha
 - Python-Chess ♟️
 
 Leave a ⭐ if you like it.
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fhnhparitosh%2FMatsya.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fhnhparitosh%2FMatsya?ref=badge_large)
